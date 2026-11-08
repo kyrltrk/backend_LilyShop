@@ -22,6 +22,15 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
+const logoutUser = asyncHandler(async (req: Request, res: Response) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
+  res.status(200).json({ message: "Sesion cerrada exitosamente" });
+});
+
 //Registrar
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -79,7 +88,35 @@ const updateUser = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Usuario no encontrado");
   }
 });
-//Obtener todos los usuarios
-//Eliminar usuario por ID
 
-export { authUser, getUserById, registerUser, updateUser };
+//Eliminar usuario por ID
+const deleteUser = asyncHandler(async (req: Request, res: Response) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    if (user.isAdmin) {
+      res.status(403);
+      throw new Error("No se puede eliminar un usuario administrador");
+    }
+    await User.deleteOne({ _id: user._id });
+    res.status(200).json({ message: "Usuario eliminado exitosamente" });
+  } else {
+    res.status(404);
+    throw new Error("Usuario no encontrado");
+  }
+});
+
+//Obtener todos los usuarios
+const getUsers = asyncHandler(async (req: Request, res: Response) => {
+  const users = await User.find({});
+  res.status(200).json(users);
+});
+
+export {
+  authUser,
+  deleteUser,
+  getUserById,
+  getUsers,
+  logoutUser,
+  registerUser,
+  updateUser,
+};

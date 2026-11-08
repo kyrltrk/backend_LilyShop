@@ -1,12 +1,8 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
+import { Types } from "mongoose";
 
-//Ese hijuelaverga q aparece cada 6 meses a joder la vida
-const generateToken = (
-  res: Response,
-  userId: any
-  // Types.ObjectId
-) => {
+const generateToken = (res: Response, userId: Types.ObjectId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET as string, {
     expiresIn: "30d",
   });
