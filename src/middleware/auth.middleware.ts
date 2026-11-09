@@ -57,8 +57,6 @@ const admin = (req: Request, res: Response, next: NextFunction) => {
     res.status(403);
     throw new Error("No autorizado, se requiere privilegios de administrador");
   }
-
-  next();
 };
 
 export { admin, protect };
